@@ -1,24 +1,16 @@
-export interface User {
-  id: string;
-  email: string;
-}
-
 export interface Subject {
   id: string;
+  user_id: string;
   name: string;
-  exam_date: string;
+  exam_date: string | null;
+  created_at: string;
 }
 
 export interface Topic {
   id: string;
+  subject_id: string;
   title: string;
-  status: 'pending' | 'completed' | 'review';
+  status: 'Not Started' | 'In Progress' | 'Done';
   is_weak: boolean;
-}
-
-export interface Doubt {
-  id: string;
-  question_text: string;
-  answer_text: string;
   created_at: string;
 }

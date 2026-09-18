@@ -6,7 +6,6 @@ import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -17,16 +16,18 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: otpError } = await supabase.auth.signInWithOtp({
         email,
-        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        },
       });
 
-      if (signInError) throw signInError;
+      if (otpError) throw otpError;
 
-      router.push("/dashboard");
+      router.push(`/verify?email=${encodeURIComponent(email)}`);
     } catch (err: any) {
-      setError(err.message || "Invalid email or password");
+      setError(err.message || "Failed to send OTP code");
     } finally {
       setLoading(false);
     }
@@ -37,7 +38,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Welcome Back</h1>
-          <p className="text-gray-600">Log in to your StudyStack account</p>
+          <p className="text-gray-600">Enter your email to receive a login code</p>
         </div>
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
@@ -50,23 +51,13 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              required
-              className="mt-1 w-full rounded-md border border-gray-300 p-2"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button
             type="submit"
             disabled={loading}
             className="w-full rounded-md bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:bg-blue-300"
           >
-            {loading ? "Logging in..." : "Log In"}
+            {loading ? "Sending code..." : "Send OTP Code"}
           </button>
         </form>
         <div className="text-center text-sm">

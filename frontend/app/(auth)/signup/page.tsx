@@ -10,13 +10,11 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setMessage(null);
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -25,21 +23,24 @@ export default function SignupPage() {
 
     setLoading(true);
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      // 1. Create the user account
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (signUpError) throw signUpError;
 
-      // If user is created but requires email confirmation
-      if (data.user && !data.session) {
-        setMessage("Confirmation email sent! Please check your inbox to verify your account.");
-      } else {
-        router.push("/dashboard");
-      }
+      // 2. Trigger the OTP for immediate verification
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email,
+      });
+
+      if (otpError) throw otpError;
+
+      router.push(`/verify?email=${encodeURIComponent(email)}`);
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+      setError(err.message || "An unexpected error occurred during signup");
     } finally {
       setLoading(false);
     }
@@ -84,7 +85,6 @@ export default function SignupPage() {
             />
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
-          {message && <p className="text-sm text-green-600">{message}</p>}
           <button
             type="submit"
             disabled={loading}
