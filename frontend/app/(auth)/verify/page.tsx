@@ -114,7 +114,7 @@ export default function VerifyOtpPage() {
             {otp.map((digit, idx) => (
               <input
                 key={idx}
-                ref={(el) => { inputRefs.current[idx] = el }}
+                ref={(el) => { inputRefs.current[idx] = el; }}
                 type="text"
                 maxLength={1}
                 value={digit}
@@ -136,7 +136,7 @@ export default function VerifyOtpPage() {
           </button>
         </form>
 
-        <div className="text-center text-sm">
+        <div className="text-center text-sm text-gray-600">
           {canResend ? (
             <span>
               Didn't get the code?{" "}

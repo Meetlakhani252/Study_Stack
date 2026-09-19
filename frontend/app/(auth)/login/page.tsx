@@ -18,16 +18,13 @@ export default function LoginPage() {
     try {
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-        },
       });
 
       if (otpError) throw otpError;
 
       router.push(`/verify?email=${encodeURIComponent(email)}`);
-    } catch (err: any) {
-      setError(err.message || "Failed to send OTP code");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to send OTP code");
     } finally {
       setLoading(false);
     }
@@ -60,8 +57,8 @@ export default function LoginPage() {
             {loading ? "Sending code..." : "Send OTP Code"}
           </button>
         </form>
-        <div className="text-center text-sm">
-          Don't have an account?{" "}
+        <div className="text-center text-sm text-gray-600">
+          Don&apos;t have an account?{" "}
           <a href="/signup" className="text-blue-600 hover:underline">Sign Up</a>
         </div>
       </div>

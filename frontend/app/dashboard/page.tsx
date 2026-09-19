@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { Subject } from "@/types";
+import { User } from "@supabase/supabase-js";
 import CreateSubjectForm from "@/components/SyllabusTracker/CreateSubjectForm";
 import SubjectCard from "@/components/SyllabusTracker/SubjectCard";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [isCreatingSubject, setIsCreatingSubject] = useState(false);
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function DashboardPage() {
     const { data, error } = await supabase
       .from("subjects")
       .select("*")
+      .eq("user_id", user?.id)
       .order("created_at", { ascending: false });
 
     if (!error && data) {
@@ -66,28 +68,31 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="flex items-center justify-between bg-white px-6 py-4 shadow-sm">
-        <h1 className="text-xl font-bold text-blue-600">StudyStack</h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      <header className="sticky top-0 z-50 flex items-center justify-between bg-white/95 backdrop-blur-md px-6 py-4 shadow-sm border-b border-gray-100 dark:bg-slate-800/95 dark:border-slate-700">
+        <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-gray-900 dark:text-white">
+          <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-sm">S</div>
+          <span>Study_Stack</span>
+        </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">{user?.email}</span>
+          <span className="hidden sm:block text-sm font-medium text-gray-600 dark:text-gray-400">{user?.email}</span>
           <button
             onClick={handleLogout}
-            className="rounded-md bg-gray-200 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-300"
+            className="rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
           >
             Logout
           </button>
         </div>
       </header>
-      <main className="mx-auto max-w-4xl p-6">
+      <main className="mx-auto max-w-4xl p-6 sm:p-8">
         <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">My Syllabus</h2>
-            <p className="text-sm text-gray-600">Track your progress across subjects</p>
+          <div className="space-y-1">
+            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">My Syllabus</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Track your progress across subjects</p>
           </div>
           <button
             onClick={() => setIsCreatingSubject(true)}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-all active:scale-95"
           >
             + Add Subject
           </button>
@@ -95,8 +100,10 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {subjects.length === 0 ? (
-            <div className="col-span-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
-              <p className="text-gray-500">No subjects added yet. Start by adding your first subject!</p>
+            <div className="col-span-full rounded-xl border-2 border-dashed border-gray-200 p-12 text-center dark:border-slate-700">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-2xl dark:bg-slate-800">📚</div>
+              <p className="text-lg font-medium text-gray-900 dark:text-white">No subjects added yet</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Start by adding your first subject to begin tracking!</p>
             </div>
           ) : (
             subjects.map(subject => (
