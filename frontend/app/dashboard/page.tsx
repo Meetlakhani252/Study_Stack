@@ -7,6 +7,10 @@ import { Subject } from "@/types";
 import { User } from "@supabase/supabase-js";
 import CreateSubjectForm from "@/components/SyllabusTracker/CreateSubjectForm";
 import SubjectCard from "@/components/SyllabusTracker/SubjectCard";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { Header } from "@/components/layout/Header";
+import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -61,68 +65,73 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <p className="text-lg font-medium">Loading dashboard...</p>
+      <div className="flex h-screen items-center justify-center bg-bg">
+        <p className="text-lg font-medium text-main">Loading dashboard...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
-      <header className="sticky top-0 z-50 flex items-center justify-between bg-white/95 backdrop-blur-md px-6 py-4 shadow-sm border-b border-gray-100 dark:bg-slate-800/95 dark:border-slate-700">
-        <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-gray-900 dark:text-white">
-          <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-sm">S</div>
-          <span>Study_Stack</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="hidden sm:block text-sm font-medium text-gray-600 dark:text-gray-400">{user?.email}</span>
-          <button
-            onClick={handleLogout}
-            className="rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
-      <main className="mx-auto max-w-4xl p-6 sm:p-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div className="space-y-1">
-            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">My Syllabus</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Track your progress across subjects</p>
-          </div>
-          <button
-            onClick={() => setIsCreatingSubject(true)}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-all active:scale-95"
-          >
-            + Add Subject
-          </button>
-        </div>
+    <div className="min-h-screen bg-bg flex">
+      <Sidebar
+        userEmail={user?.email}
+        onLogout={handleLogout}
+        activeRoute="/dashboard"
+      />
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="flex-1 flex flex-col lg:ml-56 transition-all duration-300">
+        <Header title="My Syllabus" />
+
+        <main className="p-8 max-w-[1200px] w-full mx-auto">
+          <div className="mb-8 flex items-center justify-between">
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold tracking-tight text-main">My Syllabus</h2>
+              <p className="text-sm text-muted">Track your progress across subjects</p>
+            </div>
+            <Button
+              onClick={() => setIsCreatingSubject(true)}
+              className="rounded-md"
+            >
+              + Add Subject
+            </Button>
+          </div>
+
           {subjects.length === 0 ? (
-            <div className="col-span-full rounded-xl border-2 border-dashed border-gray-200 p-12 text-center dark:border-slate-700">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-2xl dark:bg-slate-800">📚</div>
-              <p className="text-lg font-medium text-gray-900 dark:text-white">No subjects added yet</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Start by adding your first subject to begin tracking!</p>
+            <div className="flex flex-col items-center justify-center py-20 rounded-xl border-2 border-dashed border-border bg-surface text-center max-w-2xl mx-auto">
+              <div className="mb-4 p-4 rounded-full bg-selected text-primary">
+                <BookOpen size={48} />
+              </div>
+              <h3 className="text-xl font-semibold text-main mb-2">Create your first subject</h3>
+              <p className="text-muted mb-6 px-6">
+                Add a subject and its topics to start tracking your progress.
+              </p>
+              <Button
+                onClick={() => setIsCreatingSubject(true)}
+                variant="default"
+              >
+                Add Subject
+              </Button>
             </div>
           ) : (
-            subjects.map(subject => (
-              <SubjectCard
-                key={subject.id}
-                subject={subject}
-                onRefresh={fetchSubjects}
-              />
-            ))
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {subjects.map(subject => (
+                <SubjectCard
+                  key={subject.id}
+                  subject={subject}
+                  onRefresh={fetchSubjects}
+                />
+              ))}
+            </div>
           )}
-        </div>
 
-        {isCreatingSubject && (
-          <CreateSubjectForm
-            onSubjectCreated={handleSubjectCreated}
-            onClose={() => setIsCreatingSubject(false)}
-          />
-        )}
-      </main>
+          {isCreatingSubject && (
+            <CreateSubjectForm
+              onSubjectCreated={handleSubjectCreated}
+              onClose={() => setIsCreatingSubject(false)}
+            />
+          )}
+        </main>
+      </div>
     </div>
   );
 }
