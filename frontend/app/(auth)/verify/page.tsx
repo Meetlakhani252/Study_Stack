@@ -36,7 +36,6 @@ export default function VerifyOtpPage() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Move to next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -60,17 +59,32 @@ export default function VerifyOtpPage() {
 
     const token = otp.join("");
     try {
-      const { error: verifyError } = await supabase.auth.verifyOtp({
+      // Try "signup" first because new users sign up with password
+      const { error: signupError } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: "signup",
+      });
+
+      if (!signupError) {
+        router.push("/dashboard");
+        return;
+      }
+
+      // Fallback to "email" (Magic Link) if signup verification fails
+      const { error: emailError } = await supabase.auth.verifyOtp({
         email,
         token,
         type: "email",
       });
 
-      if (verifyError) throw verifyError;
+      if (emailError) {
+        throw new Error("Invalid or expired verification code");
+      }
 
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Invalid or expired OTP code");
+      setError(err.message || "Verification failed. Please check the code and try again.");
     } finally {
       setLoading(false);
     }
@@ -139,7 +153,7 @@ export default function VerifyOtpPage() {
         <div className="text-center text-sm text-gray-600">
           {canResend ? (
             <span>
-              Didn't get the code?{" "}
+              Didn&apos;t get the code?{" "}
               <button
                 onClick={handleResend}
                 className="text-blue-600 font-medium hover:underline"
@@ -155,3 +169,4 @@ export default function VerifyOtpPage() {
     </div>
   );
 }
+

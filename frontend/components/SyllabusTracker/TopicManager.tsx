@@ -32,7 +32,6 @@ export default function TopicManager({ subjectId, onTopicsUpdated }: TopicManage
   async function updateTopicStatus(topicId: string, newStatus: Topic["status"]) {
     const previousTopics = [...topics];
 
-    // Optimistic Update
     setTopics(prev => prev.map(t => t.id === topicId ? { ...t, status: newStatus } : t));
     setError(null);
 
@@ -44,6 +43,25 @@ export default function TopicManager({ subjectId, onTopicsUpdated }: TopicManage
     if (updateError) {
       setTopics(previousTopics);
       setError(`Failed to update status: ${updateError.message}`);
+    } else {
+      onTopicsUpdated();
+    }
+  }
+
+  async function toggleWeakFlag(topicId: string, currentWeak: boolean) {
+    const previousTopics = [...topics];
+
+    setTopics(prev => prev.map(t => t.id === topicId ? { ...t, is_weak: !currentWeak } : t));
+    setError(null);
+
+    const { error: updateError } = await supabase
+      .from("topics")
+      .update({ is_weak: !currentWeak })
+      .eq("id", topicId);
+
+    if (updateError) {
+      setTopics(previousTopics);
+      setError(`Failed to update weakness flag: ${updateError.message}`);
     } else {
       onTopicsUpdated();
     }
@@ -100,10 +118,22 @@ export default function TopicManager({ subjectId, onTopicsUpdated }: TopicManage
                 key={topic.id}
                 className="flex items-center justify-between rounded-md border border-gray-100 bg-white p-3 shadow-sm"
               >
-                <div className="flex-1 min-w-0 pr-4">
+                <div className="flex-1 min-w-0 pr-4 flex items-center gap-2">
                   <span className="block truncate text-sm font-medium text-gray-900">
                     {topic.title}
                   </span>
+                  <button 
+                    onClick={() => toggleWeakFlag(topic.id, topic.is_weak)}
+                    className={cn(
+                      "text-[10px] px-1.5 py-0.5 rounded border transition-colors",
+                      topic.is_weak 
+                        ? "bg-amber-100 border-amber-300 text-amber-700" 
+                        : "bg-gray-50 border-gray-200 text-gray-400 hover:bg-gray-100"
+                    )}
+                    title="Mark as weak"
+                  >
+                    {topic.is_weak ? "Weak" : "Strong"}
+                  </button>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -135,3 +165,4 @@ export default function TopicManager({ subjectId, onTopicsUpdated }: TopicManage
     </div>
   );
 }
+

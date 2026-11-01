@@ -21,24 +21,26 @@ export default function SignupPage() {
       return;
     }
 
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
     setLoading(true);
     try {
-      // 1. Create the user account
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (signUpError) throw signUpError;
 
-      // 2. Trigger the OTP for immediate verification
-      const { error: otpError } = await supabase.auth.signInWithOtp({
-        email,
-      });
-
-      if (otpError) throw otpError;
-
-      router.push(`/verify?email=${encodeURIComponent(email)}`);
+      if (data.user && data.session) {
+        router.push("/dashboard");
+      } else {
+        // FIXED: Ensure the email is passed as a query parameter to the verification page
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      }
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred during signup");
     } finally {
@@ -54,32 +56,32 @@ export default function SignupPage() {
           <p className="text-gray-600">Join StudyStack to start studying</p>
         </div>
         <form className="space-y-4" onSubmit={handleSignup}>
-          <div>
+          <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 p-2"
+              className="mt-1 w-full rounded-md border border-gray-300 p-2 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div>
+          <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">Password</label>
             <input
               type="password"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 p-2"
+              className="mt-1 w-full rounded-md border border-gray-300 p-2 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div>
+          <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
             <input
               type="password"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 p-2"
+              className="mt-1 w-full rounded-md border border-gray-300 p-2 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
@@ -101,3 +103,4 @@ export default function SignupPage() {
     </div>
   );
 }
+

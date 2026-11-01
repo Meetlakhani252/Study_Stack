@@ -35,12 +35,16 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
   }
 
   const calculateProgress = () => {
-    if (topics.length === 0) return 0;
+    if (topics.length === 0) return { percentage: 0, count: "0 of 0" };
     const doneCount = topics.filter(t => t.status === "Done").length;
-    return Math.round((doneCount / topics.length) * 100);
+    const percentage = Math.round((doneCount / topics.length) * 100);
+    return { 
+      percentage, 
+      count: `${doneCount} of ${topics.length} topics completed` 
+    };
   };
 
-  const progress = calculateProgress();
+  const { percentage, count } = calculateProgress();
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
@@ -49,26 +53,27 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">{subject.name}</h3>
+          <div className="min-w-0">
+            <h3 className="text-lg font-bold text-gray-900 truncate">{subject.name}</h3>
             {subject.exam_date && (
               <p className="text-xs text-gray-500">Exam: {subject.exam_date}</p>
             )}
           </div>
           <div className="flex items-center gap-3">
             <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-700">
-              {progress}%
+              {percentage}%
             </span>
-            <span className="text-gray-400">{isExpanded ? "▲" : "▼"}</span>
+            <span className="text-gray-400">{isExpanded ? "?" : "?"}</span>
           </div>
         </div>
 
         <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-200">
           <div
             className="h-full bg-blue-600 transition-all duration-300"
-            style={{ width: `${progress}%` }}
+            style={{ width: `${percentage}%` }}
           />
         </div>
+        <p className="mt-2 text-xs text-gray-500 text-right font-medium">{count}</p>
       </div>
 
       {isExpanded && (
@@ -105,3 +110,4 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
     </div>
   );
 }
+

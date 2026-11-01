@@ -35,7 +35,7 @@ export default function DashboardPage() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
-        router.push("/login");
+        router.push("/");
       }
     });
 
@@ -55,8 +55,14 @@ export default function DashboardPage() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
+    try {
+      await supabase.auth.signOut();
+      router.push("/");
+    } catch (err) {
+      console.error("Logout failed:", err);
+      // Redirect anyway to clear UI, but user might still be signed in via session
+      router.push("/");
+    }
   };
 
   const handleSubjectCreated = (newSubject: Subject) => {
@@ -135,3 +141,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
