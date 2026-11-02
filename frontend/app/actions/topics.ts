@@ -25,7 +25,11 @@ export async function getTopicsBySubject(subjectId: string): Promise<Topic[]> {
     ORDER BY created_at ASC
   `;
 
-  return rows as unknown as Topic[];
+  return rows.map((r: any) => ({
+    ...r,
+    created_at: r.created_at instanceof Date ? r.created_at.toISOString() : String(r.created_at),
+    is_weak: Boolean(r.is_weak),
+  })) as Topic[];
 }
 
 export async function addTopics(subjectId: string, titles: string[]): Promise<Topic[]> {
@@ -49,7 +53,11 @@ export async function addTopics(subjectId: string, titles: string[]): Promise<To
       VALUES (${subjectId}, ${title}, 'Not Started', false)
       RETURNING id, subject_id, title, status, is_weak, created_at
     `;
-    insertedTopics.push(rows[0] as unknown as Topic);
+    insertedTopics.push({
+      ...(rows[0] as any),
+      created_at: (rows[0] as any).created_at instanceof Date ? (rows[0] as any).created_at.toISOString() : String((rows[0] as any).created_at),
+      is_weak: Boolean((rows[0] as any).is_weak),
+    } as Topic);
   }
 
   return insertedTopics;

@@ -26,7 +26,10 @@ export async function getDoubtsBySubject(subjectId: string): Promise<DoubtItem[]
     ORDER BY created_at DESC
   `;
 
-  return rows as unknown as DoubtItem[];
+  return rows.map((r: any) => ({
+    ...r,
+    created_at: r.created_at instanceof Date ? r.created_at.toISOString() : String(r.created_at),
+  })) as DoubtItem[];
 }
 
 export async function createDoubt(subjectId: string, question: string): Promise<DoubtItem> {
@@ -41,6 +44,10 @@ export async function createDoubt(subjectId: string, question: string): Promise<
     RETURNING id, subject_id, user_id, question_text, image_url, answer_text, created_at
   `;
 
-  return rows[0] as unknown as DoubtItem;
+  const r = rows[0] as any;
+  return {
+    ...r,
+    created_at: r.created_at instanceof Date ? r.created_at.toISOString() : String(r.created_at),
+  } as DoubtItem;
 }
 

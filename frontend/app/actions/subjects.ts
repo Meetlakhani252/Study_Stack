@@ -17,7 +17,11 @@ export async function getSubjects(): Promise<Subject[]> {
     ORDER BY created_at DESC
   `;
 
-  return rows as unknown as Subject[];
+  return rows.map((r: any) => ({
+    ...r,
+    exam_date: r.exam_date ? (r.exam_date instanceof Date ? r.exam_date.toISOString().split("T")[0] : String(r.exam_date)) : null,
+    created_at: r.created_at instanceof Date ? r.created_at.toISOString() : String(r.created_at),
+  })) as Subject[];
 }
 
 export async function getSubjectById(subjectId: string): Promise<Subject | null> {
@@ -34,7 +38,12 @@ export async function getSubjectById(subjectId: string): Promise<Subject | null>
   `;
 
   if (rows.length === 0) return null;
-  return rows[0] as unknown as Subject;
+  const r = rows[0] as any;
+  return {
+    ...r,
+    exam_date: r.exam_date ? (r.exam_date instanceof Date ? r.exam_date.toISOString().split("T")[0] : String(r.exam_date)) : null,
+    created_at: r.created_at instanceof Date ? r.created_at.toISOString() : String(r.created_at),
+  } as Subject;
 }
 
 export async function createSubject(data: { name: string; examDate?: string }): Promise<Subject> {
@@ -51,7 +60,12 @@ export async function createSubject(data: { name: string; examDate?: string }): 
     RETURNING id, user_id, name, exam_date, created_at
   `;
 
-  return rows[0] as unknown as Subject;
+  const r = rows[0] as any;
+  return {
+    ...r,
+    exam_date: r.exam_date ? (r.exam_date instanceof Date ? r.exam_date.toISOString().split("T")[0] : String(r.exam_date)) : null,
+    created_at: r.created_at instanceof Date ? r.created_at.toISOString() : String(r.created_at),
+  } as Subject;
 }
 
 export async function deleteSubject(subjectId: string): Promise<void> {
