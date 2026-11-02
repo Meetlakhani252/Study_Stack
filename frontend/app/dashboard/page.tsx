@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
 import { Subject } from "@/types";
-import { User } from "@supabase/supabase-js";
+import { getSubjects } from "@/app/actions/subjects";
 import CreateSubjectForm from "@/components/SyllabusTracker/CreateSubjectForm";
 import SubjectCard from "@/components/SyllabusTracker/SubjectCard";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -14,59 +12,26 @@ import { BookOpen } from "lucide-react";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [isCreatingSubject, setIsCreatingSubject] = useState(false);
-  const router = useRouter();
 
-  useEffect(() => {
-    const initDashboard = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push("/login");
-        return;
-      }
-      setUser(session.user);
-      await fetchSubjects();
-      setLoading(false);
-    };
-
-    initDashboard();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT") {
-        router.push("/");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [router]);
-
-  async function fetchSubjects() {
-    const { data, error } = await supabase
-      .from("subjects")
-      .select("*")
-      .eq("user_id", user?.id)
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      setSubjects(data);
-    }
-  }
-
-  const handleLogout = async () => {
+  const fetchSubjects = async () => {
     try {
-      await supabase.auth.signOut();
-      router.push("/");
+      const data = await getSubjects();
+      setSubjects(data);
     } catch (err) {
-      console.error("Logout failed:", err);
-      // Redirect anyway to clear UI, but user might still be signed in via session
-      router.push("/");
+      console.error("Failed to load subjects:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchSubjects();
+  }, []);
+
   const handleSubjectCreated = (newSubject: Subject) => {
-    setSubjects(prev => [newSubject, ...prev]);
+    setSubjects((prev) => [newSubject, ...prev]);
   };
 
   if (loading) {
@@ -79,11 +44,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-bg flex">
-      <Sidebar
-        userEmail={user?.email}
-        onLogout={handleLogout}
-        activeRoute="/dashboard"
-      />
+      <Sidebar activeRoute="/dashboard" />
 
       <div className="flex-1 flex flex-col lg:ml-56 transition-all duration-300">
         <Header title="My Syllabus" />
@@ -120,7 +81,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {subjects.map(subject => (
+              {subjects.map((subject) => (
                 <SubjectCard
                   key={subject.id}
                   subject={subject}
@@ -141,4 +102,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

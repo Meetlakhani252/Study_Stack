@@ -22,7 +22,7 @@ const FEATURES = [
   },
   {
     title: "Secure Cloud Sync",
-    description: "Your data is backed by Supabase. Access your progress from any device, anywhere, securely.",
+    description: "Your data is powered by serverless PostgreSQL. Access your progress from any device, anywhere, securely.",
     icon: <CloudSync className="size-6 text-blue-600" />,
   },
   {

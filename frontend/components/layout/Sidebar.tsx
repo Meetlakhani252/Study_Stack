@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import Link from "next/link";
 import {
@@ -10,17 +12,19 @@ import {
   Menu,
   X
 } from "lucide-react";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 interface SidebarProps {
-  userEmail?: string;
-  onLogout: () => void;
   activeRoute: string;
 }
 
-export function Sidebar({ userEmail, onLogout, activeRoute }: SidebarProps) {
+export function Sidebar({ activeRoute }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useUser();
+  const { signOut } = useClerk();
+
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
 
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -90,7 +94,7 @@ export function Sidebar({ userEmail, onLogout, activeRoute }: SidebarProps) {
             <span className="truncate">{userEmail || "User"}</span>
           </div>
           <button
-            onClick={onLogout}
+            onClick={() => signOut({ redirectUrl: "/" })}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-danger hover:bg-danger-bg transition-colors"
           >
             <LogOut size={18} />

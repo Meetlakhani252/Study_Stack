@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 
 interface Paper {
@@ -10,12 +11,14 @@ interface Paper {
   url: string;
 }
 
-export default function PapersPage({ params }: { params: { subjectId: string } }) {
+export default function PapersPage() {
+  const params = useParams<{ subjectId: string }>();
+  const subjectId = params.subjectId;
   const [papers, setPapers] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data for client demo
+    // Mock data for initial UI
     const mockPapers = [
       { id: "1", year: "2024", type: "Final Exam", url: "#" },
       { id: "2", year: "2023", type: "Mid-Term", url: "#" },
@@ -28,7 +31,7 @@ export default function PapersPage({ params }: { params: { subjectId: string } }
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-slate-900">
         <p className="text-lg font-medium text-gray-600 dark:text-gray-400">Loading papers...</p>
       </div>
     );
@@ -39,7 +42,7 @@ export default function PapersPage({ params }: { params: { subjectId: string } }
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="flex items-center justify-between">
           <Link
-            href={`/subjects/${params.subjectId}`}
+            href={`/subjects/${subjectId}`}
             className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
           >
             &larr; Back to Subject
@@ -65,22 +68,25 @@ export default function PapersPage({ params }: { params: { subjectId: string } }
               <p className="text-sm text-gray-500 dark:text-gray-400">Check back later for updates.</p>
             </div>
           ) : (
-            papers.map(paper => (
-              <div key={paper.id} className="group flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-800">
+            papers.map((paper) => (
+              <div
+                key={paper.id}
+                className="group flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-800"
+              >
                 <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                  <span className="rounded-lg bg-purple-100 p-3 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400">
                     📄
-                  </div>
+                  </span>
                   <div>
-                    <p className="font-bold text-gray-900 dark:text-white">{paper.year} {paper.type}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">PDF Format &bull; 1.2 MB</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">{paper.type}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Year: {paper.year}</p>
                   </div>
                 </div>
                 <a
                   href={paper.url}
-                  className="rounded-md bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-blue-600 hover:text-white transition-colors dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-blue-600 dark:hover:text-white"
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-700"
                 >
-                  View
+                  Download
                 </a>
               </div>
             ))
