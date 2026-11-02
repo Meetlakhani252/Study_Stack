@@ -3,7 +3,7 @@
 > This document tracks every task required to complete the StudyStack project from start to finish.
 > Update the status of each task after completion by marking it ✅.
 >
-> **Last Updated:** 2026-11-02 · Phase 5 complete
+> **Last Updated:** 2026-11-02 · Phase 7 (AI Doubt Solver) complete
 
 ---
 
@@ -120,13 +120,13 @@
 | 7.2 | Implement doubt submission modal (text input) | ✅ |
 | 7.3 | Store doubts in Neon `doubts` table via Server Action | ✅ |
 | 7.4 | Display submitted doubts list with date and "Pending" badge | ✅ |
-| 7.5 | Build FastAPI `POST /doubts/solve` endpoint (currently stub) | ⬜ |
-| 7.6 | Integrate Gemini Flash API for step-by-step doubt resolution | ⬜ |
-| 7.7 | Add image upload support (photo of handwritten question) | ⬜ |
-| 7.8 | Wire frontend doubts page to FastAPI `/doubts/solve` | ⬜ |
-| 7.9 | Display AI-generated answer below submitted doubt | ⬜ |
-| 7.10 | Mark doubt as "Resolved" after AI provides answer | ⬜ |
-| 7.11 | Add daily AI query rate limiting per user (PRD `FR-2.6`) | ⬜ |
+| 7.5 | Build FastAPI `POST /doubts/solve` endpoint | ✅ |
+| 7.6 | Integrate Gemini Flash API for step-by-step doubt resolution | ✅ |
+| 7.7 | Add image upload support (photo of handwritten question) | ✅ |
+| 7.8 | Wire frontend doubts page to AI solving pipeline | ✅ |
+| 7.9 | Display AI-generated answer below submitted doubt | ✅ |
+| 7.10 | Mark doubt as "Resolved" after AI provides answer | ✅ |
+| 7.11 | Add daily AI query rate limiting per user (PRD `FR-2.6`) | ✅ |
 
 ---
 
@@ -159,11 +159,11 @@
 | 9.4 | Create `llm_service.py` placeholder (Gemini / GPT-4o-mini) | ✅ |
 | 9.5 | Create `pdf_parser.py` using `pdfplumber` | ✅ |
 | 9.6 | Create `ocr_service.py` stub (Tesseract) | ✅ |
-| 9.7 | **Implement Gemini Flash API in `llm_service.py`** | ⬜ |
-| 9.8 | Implement OCR with Tesseract for handwritten doubt images | ⬜ |
+| 9.7 | **Implement Gemini Flash API in `llm_service.py`** | ✅ |
+| 9.8 | Implement OCR for handwritten doubt images | ✅ |
 | 9.9 | Add JWT / Clerk token verification in FastAPI for auth | ⬜ |
 | 9.10 | Add proper error handling and logging in FastAPI | ⬜ |
-| 9.11 | Add CORS configuration for frontend → backend requests | ⬜ |
+| 9.11 | Add CORS configuration for frontend → backend requests | ✅ |
 
 ---
 
@@ -207,12 +207,12 @@
 | 4. Landing Page | 10 | 10 | 0 |
 | 5. Dashboard & Syllabus | 17 | 17 | 0 |
 | 6. Subject Hub | 3 | 3 | 0 |
-| 7. AI Doubt Solver | 11 | 4 | 7 |
+| 7. AI Doubt Solver | 11 | 11 | 0 |
 | 8. Past Paper Analyzer | 12 | 1 | 11 |
-| 9. Backend Infrastructure | 11 | 6 | 5 |
+| 9. Backend Infrastructure | 11 | 9 | 2 |
 | 10. Code Quality & Polish | 9 | 3 | 6 |
 | 11. Deployment | 7 | 0 | 7 |
-| **Total** | **104** | **68** | **36** |
+| **Total** | **104** | **78** | **26** |
 
-> **~65% Complete** — Core app shell, auth, DB migration, and full syllabus tracker done. AI features and deployment are next.
+> **~75% Complete** — Core app shell, auth, DB migration, syllabus tracker, and AI Doubt Solver done. Paper analysis and deployment are next.
 

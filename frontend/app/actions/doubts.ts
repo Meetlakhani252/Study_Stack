@@ -13,6 +13,8 @@ export interface DoubtItem {
   created_at: string;
 }
 
+const DAILY_LIMIT = 20;
+
 export async function getDoubtsBySubject(subjectId: string): Promise<DoubtItem[]> {
   const { userId } = await auth();
   if (!userId) {
@@ -32,15 +34,105 @@ export async function getDoubtsBySubject(subjectId: string): Promise<DoubtItem[]
   })) as DoubtItem[];
 }
 
-export async function createDoubt(subjectId: string, question: string): Promise<DoubtItem> {
+export async function getUserDailyDoubtUsage(): Promise<{ used: number; limit: number }> {
   const { userId } = await auth();
   if (!userId) {
     throw new Error("Unauthorized");
   }
 
+  const countResult = await sql`
+    SELECT count(*)::int as count
+    FROM doubts
+    WHERE user_id = ${userId} AND created_at >= CURRENT_DATE
+  `;
+
+  const used = Number(countResult[0]?.count || 0);
+  return { used, limit: DAILY_LIMIT };
+}
+
+export async function createAndSolveDoubt(data: {
+  subjectId: string;
+  questionText: string;
+  imageBase64?: string;
+  mimeType?: string;
+}): Promise<DoubtItem> {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  // 1. Check rate limit
+  const { used, limit } = await getUserDailyDoubtUsage();
+  if (used >= limit) {
+    throw new Error(`Daily AI limit reached (${limit}/${limit} doubts). Please try again tomorrow.`);
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured on the server.");
+  }
+
+  // 2. Multimodal prompt construction
+  const parts: any[] = [];
+  if (data.imageBase64) {
+    parts.push({
+      inline_data: {
+        mime_type: data.mimeType || "image/jpeg",
+        data: data.imageBase64,
+      },
+    });
+  }
+
+  const userQuery = data.questionText.trim()
+    ? data.questionText
+    : "Please solve and explain the question or concept shown in the image step-by-step.";
+
+  parts.push({ text: userQuery });
+
+  const systemInstruction = `You are an expert college tutor on StudyStack.
+When solving this student's doubt:
+1. Explain the underlying conceptual foundation clearly.
+2. Provide a rigorous, step-by-step solution or derivation.
+3. Highlight key formulas, definitions, or exam tips.
+4. Conclude with a concise 'Key Takeaway' summary.
+Format equations and code clearly using clean markdown.`;
+
+  // 3. Call Gemini 3.8 Flash
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system_instruction: {
+          parts: [{ text: systemInstruction }],
+        },
+        contents: [{ parts }],
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errText = await response.text();
+    console.error("Gemini API error:", errText);
+    throw new Error("Failed to get solution from AI. Please try again.");
+  }
+
+  const result = await response.json();
+  const answerText =
+    result.candidates?.[0]?.content?.parts
+      ?.map((p: any) => p.text)
+      .filter(Boolean)
+      .join("\n") || "No explanation could be generated.";
+
+  const storedImageUrl = data.imageBase64
+    ? `data:${data.mimeType || "image/jpeg"};base64,${data.imageBase64}`
+    : null;
+
+  // 4. Save doubt and solution to Neon database
   const rows = await sql`
-    INSERT INTO doubts (subject_id, user_id, question_text)
-    VALUES (${subjectId}, ${userId}, ${question})
+    INSERT INTO doubts (subject_id, user_id, question_text, image_url, answer_text)
+    VALUES (${data.subjectId}, ${userId}, ${userQuery}, ${storedImageUrl}, ${answerText})
     RETURNING id, subject_id, user_id, question_text, image_url, answer_text, created_at
   `;
 
@@ -51,3 +143,14 @@ export async function createDoubt(subjectId: string, question: string): Promise<
   } as DoubtItem;
 }
 
+export async function deleteDoubt(doubtId: string): Promise<void> {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  await sql`
+    DELETE FROM doubts
+    WHERE id = ${doubtId} AND user_id = ${userId}
+  `;
+}

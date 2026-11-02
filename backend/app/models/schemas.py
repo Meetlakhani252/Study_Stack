@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 from typing import Optional, List
-from datetime import datetime
 
 class DoubtRequest(BaseModel):
     subject_id: str
     question_text: str
-    image_url: Optional[str] = None
+    image_base64: Optional[str] = None
+    mime_type: Optional[str] = "image/jpeg"
 
 class DoubtResponse(BaseModel):
     answer_text: str
