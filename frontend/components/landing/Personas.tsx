@@ -33,7 +33,7 @@ export function Personas({ className }: { className?: string }) {
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 mb-4">Designed for serious learners</h2>
           <p className="text-gray-600 text-lg">
-            Whether you're facing a massive competitive exam or learning a hobby, Study_Stack adapts to your needs.
+            Whether you&apos;re facing a massive competitive exam or learning a hobby, Study_Stack adapts to your needs.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

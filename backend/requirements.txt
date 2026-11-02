@@ -1,8 +1,8 @@
 fastapi
 uvicorn[standard]
-supabase
 pdfplumber
 PyPDF2
 pytesseract
 python-dotenv
 pydantic
+httpx

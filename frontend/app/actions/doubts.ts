@@ -61,7 +61,6 @@ export async function createAndSolveDoubt(data: {
     throw new Error("Unauthorized");
   }
 
-  // 1. Check rate limit
   const { used, limit } = await getUserDailyDoubtUsage();
   if (used >= limit) {
     throw new Error(`Daily AI limit reached (${limit}/${limit} doubts). Please try again tomorrow.`);
@@ -72,7 +71,6 @@ export async function createAndSolveDoubt(data: {
     throw new Error("GEMINI_API_KEY is not configured on the server.");
   }
 
-  // 2. Multimodal prompt construction
   const parts: any[] = [];
   if (data.imageBase64) {
     parts.push({
@@ -97,7 +95,6 @@ When solving this student's doubt:
 4. Conclude with a concise 'Key Takeaway' summary.
 Format equations and code clearly using clean markdown.`;
 
-  // 3. Call Gemini 3.8 Flash
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
     {
@@ -129,7 +126,6 @@ Format equations and code clearly using clean markdown.`;
     ? `data:${data.mimeType || "image/jpeg"};base64,${data.imageBase64}`
     : null;
 
-  // 4. Save doubt and solution to Neon database
   const rows = await sql`
     INSERT INTO doubts (subject_id, user_id, question_text, image_url, answer_text)
     VALUES (${data.subjectId}, ${userId}, ${userQuery}, ${storedImageUrl}, ${answerText})

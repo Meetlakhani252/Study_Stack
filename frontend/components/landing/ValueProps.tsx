@@ -33,7 +33,7 @@ export function ValueProps({ className }: { className?: string }) {
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 mb-4">Why Study_Stack?</h2>
           <p className="text-gray-600 text-lg">
-            We've stripped away the fluff to give you a tool that actually helps you study smarter, not longer.
+            We&apos;ve stripped away the fluff to give you a tool that actually helps you study smarter, not longer.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

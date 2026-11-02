@@ -32,10 +32,7 @@ export default function DoubtsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Daily quota state
   const [quota, setQuota] = useState<{ used: number; limit: number }>({ used: 0, limit: 20 });
-
-  // Image upload state
   const [selectedImage, setSelectedImage] = useState<{
     file: File;
     preview: string;

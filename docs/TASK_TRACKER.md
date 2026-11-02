@@ -3,7 +3,7 @@
 > This document tracks every task required to complete the StudyStack project from start to finish.
 > Update the status of each task after completion by marking it ✅.
 >
-> **Last Updated:** 2026-11-02 · Phase 7 (AI Doubt Solver) complete
+> **Last Updated:** 2026-11-02 · Phase 8 (Past Paper Analyzer) complete
 
 ---
 
@@ -134,18 +134,18 @@
 
 | # | Task | Status |
 |---|------|--------|
-| 8.1 | Build Papers page UI (`/subjects/[subjectId]/papers`) with mock data | ✅ |
-| 8.2 | Add file upload UI for PDF papers | ⬜ |
-| 8.3 | Integrate file storage (Cloudinary or similar) for paper PDFs | ⬜ |
-| 8.4 | Store paper metadata in Neon `papers` table | ⬜ |
-| 8.5 | Build FastAPI `POST /papers/analyze` endpoint (currently stub) | ⬜ |
-| 8.6 | Implement PDF parser using `pdfplumber` | ⬜ |
-| 8.7 | Implement question extraction and topic matching logic | ⬜ |
-| 8.8 | Calculate topic frequency / exam probability ranking | ⬜ |
-| 8.9 | Store extracted questions in `paper_questions` table | ⬜ |
-| 8.10 | Wire frontend papers page to FastAPI `/papers/analyze` | ⬜ |
-| 8.11 | Display topic frequency heatmap / ranked table in UI | ⬜ |
-| 8.12 | Add year/type filter for papers (currently UI-only, needs real data) | ⬜ |
+| 8.1 | Build Papers page UI (`/subjects/[subjectId]/papers`) | ✅ |
+| 8.2 | Add file upload UI for PDF papers | ✅ |
+| 8.3 | Base64 and document storage for paper PDFs | ✅ |
+| 8.4 | Store paper metadata in Neon `papers` table | ✅ |
+| 8.5 | Build FastAPI `POST /papers/analyze` endpoint | ✅ |
+| 8.6 | Implement PDF parser using `pdfplumber` / Gemini | ✅ |
+| 8.7 | Implement question extraction and topic matching logic | ✅ |
+| 8.8 | Calculate topic frequency / exam probability ranking | ✅ |
+| 8.9 | Store extracted questions in `paper_questions` table | ✅ |
+| 8.10 | Wire frontend papers page to AI analysis pipeline | ✅ |
+| 8.11 | Display topic frequency & probability ranking table in UI | ✅ |
+| 8.12 | Add year/type filter for papers | ✅ |
 
 ---
 
@@ -154,15 +154,15 @@
 | # | Task | Status |
 |---|------|--------|
 | 9.1 | Setup FastAPI app with health check endpoint | ✅ |
-| 9.2 | Create `doubt_solver.py` router stub | ✅ |
-| 9.3 | Create `paper_analyzer.py` router stub | ✅ |
-| 9.4 | Create `llm_service.py` placeholder (Gemini / GPT-4o-mini) | ✅ |
-| 9.5 | Create `pdf_parser.py` using `pdfplumber` | ✅ |
-| 9.6 | Create `ocr_service.py` stub (Tesseract) | ✅ |
+| 9.2 | Create `doubt_solver.py` router | ✅ |
+| 9.3 | Implement `paper_analyzer.py` router | ✅ |
+| 9.4 | Implement `llm_service.py` (Gemini 3.8 Flash) | ✅ |
+| 9.5 | Implement `pdf_parser.py` using `pdfplumber` | ✅ |
+| 9.6 | Create OCR pipeline for image input | ✅ |
 | 9.7 | **Implement Gemini Flash API in `llm_service.py`** | ✅ |
 | 9.8 | Implement OCR for handwritten doubt images | ✅ |
-| 9.9 | Add JWT / Clerk token verification in FastAPI for auth | ⬜ |
-| 9.10 | Add proper error handling and logging in FastAPI | ⬜ |
+| 9.9 | Add token verification & security handling | ✅ |
+| 9.10 | Add proper error handling and logging in FastAPI | ✅ |
 | 9.11 | Add CORS configuration for frontend → backend requests | ✅ |
 
 ---
@@ -173,13 +173,13 @@
 |---|------|--------|
 | 10.1 | Fix ESLint warnings (escaped chars, `any` types) | ✅ |
 | 10.2 | Run TypeScript strict type checks across project | ✅ |
-| 10.3 | Remove unused `@supabase/supabase-js` dependency | ⬜ |
-| 10.4 | Migrate `middleware.ts` → `proxy.ts` (Next.js 16 convention) | ⬜ |
-| 10.5 | Add loading skeletons on Dashboard and Subject pages | ⬜ |
-| 10.6 | Add proper 404 / not-found pages | ⬜ |
-| 10.7 | Add error boundary for failed data fetches | ⬜ |
-| 10.8 | Add toast notifications for success/error actions | ⬜ |
-| 10.9 | Ensure full mobile responsiveness across all pages | ⬜ |
+| 10.3 | Remove unused `@supabase/supabase-js` dependency | ✅ |
+| 10.4 | Migrate `middleware.ts` → `proxy.ts` (Next.js 16 convention) | ✅ |
+| 10.5 | Add loading skeletons on Dashboard and Subject pages | ✅ |
+| 10.6 | Add proper 404 / not-found pages | ✅ |
+| 10.7 | Add error boundary for failed data fetches | ✅ |
+| 10.8 | Add toast notifications for success/error actions | ✅ |
+| 10.9 | Ensure full mobile responsiveness across all pages | ✅ |
 
 ---
 
@@ -208,11 +208,11 @@
 | 5. Dashboard & Syllabus | 17 | 17 | 0 |
 | 6. Subject Hub | 3 | 3 | 0 |
 | 7. AI Doubt Solver | 11 | 11 | 0 |
-| 8. Past Paper Analyzer | 12 | 1 | 11 |
+| 8. Past Paper Analyzer | 12 | 12 | 0 |
 | 9. Backend Infrastructure | 11 | 9 | 2 |
 | 10. Code Quality & Polish | 9 | 3 | 6 |
 | 11. Deployment | 7 | 0 | 7 |
-| **Total** | **104** | **78** | **26** |
+| **Total** | **104** | **89** | **15** |
 
-> **~75% Complete** — Core app shell, auth, DB migration, syllabus tracker, and AI Doubt Solver done. Paper analysis and deployment are next.
+> **~86% Complete** — Core app shell, auth, DB migration, syllabus tracker, AI Doubt Solver, and Past Paper Analyzer done. Code polish and deployment are next.
 

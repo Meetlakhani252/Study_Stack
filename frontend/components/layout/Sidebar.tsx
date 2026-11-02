@@ -35,40 +35,35 @@ export function Sidebar({ activeRoute }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile Toggle */}
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-surface border border-border text-main"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-surface border border-border text-main cursor-pointer"
       >
         <Menu size={20} />
       </button>
 
-      {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-xs lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
       <aside className={cn(
         "fixed inset-y-0 left-0 z-50 w-56 bg-surface border-r border-border transition-transform duration-300 ease-in-out flex flex-col",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
-        {/* Branding */}
         <div className="p-6 flex items-center gap-3 border-b border-border">
           <div className="bg-primary text-primary-fg p-1.5 rounded-md font-bold text-lg">S</div>
           <span className="font-bold text-xl tracking-tight text-main">StudyStack</span>
           <button
             onClick={() => setIsOpen(false)}
-            className="lg:hidden ml-auto p-1 text-muted hover:text-main"
+            className="lg:hidden ml-auto p-1 text-muted hover:text-main cursor-pointer"
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => (
             <Link
@@ -87,7 +82,6 @@ export function Sidebar({ activeRoute }: SidebarProps) {
           ))}
         </nav>
 
-        {/* Bottom User Controls */}
         <div className="p-4 border-t border-border space-y-1">
           <div className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted truncate">
             <User size={18} />
@@ -95,7 +89,7 @@ export function Sidebar({ activeRoute }: SidebarProps) {
           </div>
           <button
             onClick={() => signOut({ redirectUrl: "/" })}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-danger hover:bg-danger-bg transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-danger hover:bg-danger-bg transition-colors cursor-pointer"
           >
             <LogOut size={18} />
             Logout

@@ -10,7 +10,6 @@ export async function getTopicsBySubject(subjectId: string): Promise<Topic[]> {
     throw new Error("Unauthorized");
   }
 
-  // Ensure subject belongs to user
   const subjectCheck = await sql`
     SELECT id FROM subjects WHERE id = ${subjectId} AND user_id = ${userId}
   `;

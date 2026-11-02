@@ -13,9 +13,7 @@ export function Header({ title, className }: HeaderProps) {
       className
     )}>
       <h1 className="text-xl font-semibold text-main">{title}</h1>
-      <div className="flex items-center gap-4">
-        {/* Right side slots for profile/settings can go here */}
-      </div>
+      <div className="flex items-center gap-4" />
     </header>
   );
 }

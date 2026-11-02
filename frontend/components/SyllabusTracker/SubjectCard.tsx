@@ -14,7 +14,6 @@ interface SubjectCardProps {
   onRefresh: () => void;
 }
 
-// ── Countdown helper ───────────────────────────────────────────────────────────
 function getCountdown(examDate: string | null): { label: string; urgent: boolean } | null {
   if (!examDate) return null;
   const today = new Date();
@@ -33,9 +32,7 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
   const [isAddingTopics, setIsAddingTopics] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [topics, setTopics] = useState<Topic[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  // Edit form state
   const [editName, setEditName] = useState(subject.name);
   const [editDate, setEditDate] = useState(subject.exam_date ?? "");
   const [editLoading, setEditLoading] = useState(false);
@@ -46,18 +43,14 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
   }, [subject.id]);
 
   async function fetchTopics() {
-    setLoading(true);
     try {
       const data = await getTopicsBySubject(subject.id);
       setTopics(data);
     } catch (err) {
       console.error("Failed to load topics:", err);
-    } finally {
-      setLoading(false);
     }
   }
 
-  // ── Progress ──────────────────────────────────────────────────────────────
   const calculateProgress = () => {
     if (topics.length === 0) return { percentage: 0, count: "0 of 0" };
     const doneCount = topics.filter((t) => t.status === "Done").length;
@@ -68,11 +61,8 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
     };
   };
   const { percentage, count } = calculateProgress();
-
-  // ── Countdown ─────────────────────────────────────────────────────────────
   const countdown = getCountdown(subject.exam_date);
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
   async function handleDelete(e: React.MouseEvent) {
     e.stopPropagation();
     if (!confirm(`Delete "${subject.name}"? All topics will be removed.`)) return;
@@ -117,16 +107,13 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
     setIsEditing(false);
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm transition-all hover:shadow-md">
-      {/* ── Card Header ───────────────────────────────────────────────────── */}
       <div
         className="cursor-pointer p-4 select-none"
         onClick={() => !isEditing && setIsExpanded(!isExpanded)}
       >
         {isEditing ? (
-          /* ── Edit Mode ──────────────────────────────────────────────────── */
           <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
             <input
               autoFocus
@@ -159,7 +146,6 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
             </div>
           </div>
         ) : (
-          /* ── View Mode ──────────────────────────────────────────────────── */
           <>
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
@@ -167,7 +153,6 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
                   {subject.name}
                 </h3>
 
-                {/* Exam date + countdown */}
                 {subject.exam_date && (
                   <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -188,7 +173,6 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
                 )}
               </div>
 
-              {/* Action buttons + progress badge */}
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="rounded-full bg-blue-100 dark:bg-blue-900/40 px-2 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
                   {percentage}%
@@ -212,7 +196,6 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
               </div>
             </div>
 
-            {/* Progress bar */}
             <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-slate-700">
               <div
                 className="h-full bg-blue-600 transition-all duration-300"
@@ -226,7 +209,6 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
         )}
       </div>
 
-      {/* ── Expanded Topics Section ───────────────────────────────────────── */}
       {isExpanded && !isEditing && (
         <div className="border-t border-gray-100 dark:border-slate-700 p-4">
           <div className="mb-4 flex items-center justify-between">
@@ -254,7 +236,6 @@ export default function SubjectCard({ subject, onRefresh }: SubjectCardProps) {
         </div>
       )}
 
-      {/* ── Add Topics Modal ──────────────────────────────────────────────── */}
       {isAddingTopics && (
         <AddTopicsModal
           subjectId={subject.id}

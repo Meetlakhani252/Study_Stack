@@ -19,18 +19,18 @@ export default function TopicManager({ subjectId, onTopicsUpdated }: TopicManage
   const [topics, setTopics] = useState<Topic[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchTopics();
-  }, [subjectId]);
-
-  async function fetchTopics() {
+  const fetchTopics = async () => {
     try {
       const data = await getTopicsBySubject(subjectId);
       setTopics(data);
     } catch (err: any) {
       console.error("Failed to fetch topics:", err);
     }
-  }
+  };
+
+  useEffect(() => {
+    fetchTopics();
+  }, [subjectId]);
 
   async function handleStatusChange(topicId: string, newStatus: Topic["status"]) {
     const previousTopics = [...topics];

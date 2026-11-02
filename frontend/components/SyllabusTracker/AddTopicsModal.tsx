@@ -49,7 +49,6 @@ export default function AddTopicsModal({ subjectId, subjectName, onTopicsAdded, 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="relative w-full max-w-md rounded-lg bg-white dark:bg-slate-800 p-8 shadow-2xl">
-        {/* Close Icon */}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
