@@ -68,6 +68,33 @@ export async function createSubject(data: { name: string; examDate?: string }): 
   } as Subject;
 }
 
+export async function updateSubject(
+  subjectId: string,
+  data: { name: string; examDate?: string }
+): Promise<Subject> {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const examDateVal = data.examDate ? data.examDate : null;
+
+  const rows = await sql`
+    UPDATE subjects
+    SET name = ${data.name}, exam_date = ${examDateVal}
+    WHERE id = ${subjectId} AND user_id = ${userId}
+    RETURNING id, user_id, name, exam_date, created_at
+  `;
+
+  if (rows.length === 0) throw new Error("Subject not found");
+  const r = rows[0] as any;
+  return {
+    ...r,
+    exam_date: r.exam_date ? (r.exam_date instanceof Date ? r.exam_date.toISOString().split("T")[0] : String(r.exam_date)) : null,
+    created_at: r.created_at instanceof Date ? r.created_at.toISOString() : String(r.created_at),
+  } as Subject;
+}
+
 export async function deleteSubject(subjectId: string): Promise<void> {
   const { userId } = await auth();
   if (!userId) {
